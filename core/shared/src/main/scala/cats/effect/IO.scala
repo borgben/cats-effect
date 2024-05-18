@@ -591,7 +591,11 @@ sealed abstract class IO[+A] private () extends IOPlatform[A] {
   def onError(f: Throwable => IO[Unit]): IO[A] =
     handleErrorWith(t => f(t).voidError *> IO.raiseError(t))
 
-  /**
+
+  def onError(pf: PartialFunction[Throwable, IO[Unit]]): IO[A] =
+    handleErrorWith(e => pf(e).voidError *> IO.raiseError(e))
+
+  /** 
    * Like `Parallel.parProductL`
    */
   def parProductL[B](iob: IO[B])(implicit P: NonEmptyParallel[IO]): IO[A] =
